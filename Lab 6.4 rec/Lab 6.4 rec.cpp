@@ -9,11 +9,23 @@ int MaxElement(int a[], const int size, int i, int max);
 int Sum(int a[], const int size, int i, int sum);
 void ModArray(int a[], int size, int aval, int bval, int i, int j);
 
+template <typename T>
+T SumSecond(T a[], const int size, int i, int sum) {
+    if (i == size) {
+        return sum;
+    }
+    if (a[i] > 0) {
+        return SumSecond(a, size, i + 1, 0);
+    }
+    sum += a[i];
+    return SumSecond(a, size, i + 1, sum);
+}
+
 int main() {
-    srand((unsigned)time(NULL));
-    int n = 5;
+    int n;
+    cout << "n: "; cin >> n;
     int *p = new int [n];
-    generateArray(p, 5, -10, 10, 0);
+    generateArray(p, n, -10, 10, 0);
 
     cout << "Array Elements: ";
     printArray(p, n, 0);
@@ -23,18 +35,19 @@ int main() {
     int max = MaxElement(p, n, 0, INT_MIN);
     cout << max << endl;
 
-    int NewSum = Sum(p, n, 0, 0);
-    cout << "Start Sum: " << NewSum << endl;
+    int Summ = Sum(p, n, 0, 0);
+    cout << "Start Sum: " << Summ << endl;
    
     int fnum, snum;
-
+    int t[10];
     cout << "type num: ";  cin >> fnum;
     cout << "type second num: ";  cin >> snum;
-
-    ModArray(p, n, fnum, snum, 0, 0);
-    cout << "\nModified: ";
-
-    printArray(p, n, 0);
+    
+    cout << "\nModified: " << endl;
+    generateArray(t, 10, fnum, snum, 0);
+    int Summ2 = SumSecond(t, 10, 0, 0);
+    cout << "Last Sum: " << Summ2 << endl;
+    printArray(t, 10, 0);
 
     return 0;
 }
@@ -75,6 +88,8 @@ int Sum(int a[], const int size, int i, int sum) {
     sum += a[i];
     return Sum(a, size, i + 1, sum);
 }
+
+
 
 void ModArray(int a[], int size, int fnum, int snum, int i, int j) {
     if (i == size) {
