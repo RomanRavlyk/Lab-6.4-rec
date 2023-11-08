@@ -1,61 +1,49 @@
 ﻿#include <iostream>
 #include <cmath>
 #include <random>
+#include <iomanip>
 using namespace std;
 
 void printArray(int* array, int size, int i);
 void generateArray(int* arr, int size, int min, int max, int i);
-int MaxElement(int a[], const int size, int i, int max);
-int Sum(int a[], const int size, int i, int sum);
-void ModArray(int a[], int size, int aval, int bval, int i, int j);
-
-template <typename T>
-T SumSecond(T a[], const int size, int i, int sum) {
-    if (i == size) {
-        return sum;
-    }
-    if (a[i] > 0) {
-        return SumSecond(a, size, i + 1, 0);
-    }
-    sum += a[i];
-    return SumSecond(a, size, i + 1, sum);
-}
+int multPairElements(int* arr, int size, int i);
+void printModifiedArray(int* arr, int size, int i);
+int sumOfArrayElements(int* arr, int size, int sum, int i);
+void QuickSortModified(int* arr, int left, int right);
 
 int main() {
+    srand(static_cast<unsigned int>(time(nullptr)));
     int n;
     cout << "n: "; cin >> n;
-    int *p = new int [n];
+    int* p = new int[n];
     generateArray(p, n, -10, 10, 0);
 
-    cout << "Array Elements: ";
+    cout << "ArrayElements                     : ";
     printArray(p, n, 0);
     cout << endl;
 
-    cout << "MaxNumber: ";
-    int max = MaxElement(p, n, 0, INT_MIN);
-    cout << max << endl;
+    int multipleOfPairElements = multPairElements(p, n, 0);
+    cout << "Multiply of pair elements in array: " << multipleOfPairElements << endl;
 
-    int Summ = Sum(p, n, 0, 0);
-    cout << "Start Sum: " << Summ << endl;
-   
-    int fnum, snum;
-    int t[10];
-    cout << "type num: ";  cin >> fnum;
-    cout << "type second num: ";  cin >> snum;
-    
-    cout << "\nModified: " << endl;
-    generateArray(t, 10, fnum, snum, 0);
-    int Summ2 = SumSecond(t, 10, 0, 0);
-    cout << "Last Sum: " << Summ2 << endl;
-    printArray(t, 10, 0);
 
+    int Sum = sumOfArrayElements(p, n, 0, 0);
+    cout << "Sum of array elements             : " << Sum;
+    cout << endl;
+
+    QuickSortModified(p, 0, n - 1);
+    cout << "Sorted Array                      : ";
+
+
+    printModifiedArray(p, n, 0);
+
+    delete[] p;
     return 0;
 }
 
 
-void printArray(int *array, int size, int i) {
+void printArray(int* array, int size, int i) {
     if (i < size) {
-        printf("%d ", array[i]);
+        cout << setw(2) << array[i] << " ";
     }
     else return;
     return printArray(array, size, i + 1);
@@ -66,46 +54,64 @@ void generateArray(int* arr, int size, int min, int max, int i) {
         arr[i] = min + rand() % (max - min + 1);
         generateArray(arr, size, min, max, i + 1);
     }
+    else return;
 }
 
-int MaxElement(int a[], const int size, int i, int max = INT_MIN) {
-    if (i == size) {
-        return max;
+void printModifiedArray(int* arr, int size, int i) {
+    if (i < size) {
+        cout << setw(2) << arr[i] << " ";
+        printModifiedArray(arr, size, i + 1);
     }
-    if (a[i] > max) {
-        max = a[i];
-    }
-    return MaxElement(a, size, i + 1, max);
+    else return;
+    cout << endl;
 }
 
-int Sum(int a[], const int size, int i, int sum) {
-    if (i == size) {
-        return sum;
+int multPairElements(int* arr, int size, int i) {
+    if (i < size) {
+        if (arr[i] == 0) {
+            arr[i] = 1;
+        }
+        if (i % 2 == 0) {
+            return arr[i] * multPairElements(arr, size, i + 1);
+        }
+        return multPairElements(arr, size, i + 1);
     }
-    if (a[i] > 0) {
-        return Sum(a, size, i + 1, 0);
+    return 1;
+}
+
+int sumOfArrayElements(int* arr, int size, int sum, int i) {
+    if (i < size) {
+        if (i != 0 && i != size - 1) {
+            sum += arr[i];
+        }
+        sumOfArrayElements(arr, size, sum, i + 1);
     }
-    sum += a[i];
-    return Sum(a, size, i + 1, sum);
+    else return sum;
 }
 
 
+void QuickSortModified(int* arr, int left, int right) {
+    int i = left, j = right;
+    int pivot = arr[(left + right) / 2];
+    int temp; 
 
-void ModArray(int a[], int size, int fnum, int snum, int i, int j) {
-    if (i == size) {
-        size = j;
-        while (j < 25) {
-            a[j] = 0;
-            j++;
+    while (i <= j) {
+        while (arr[i] > pivot) 
+            i++;
+        while (arr[j] < pivot) 
+            j--;
+        if (i <= j) {
+            temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            i++;
+            j--;
         }
     }
-    else {
-        if (abs(a[i]) < fnum || abs(a[i]) > snum) {
-            a[j] = a[i];
-            ModArray(a, size, fnum, snum, i + 1, j + 1);
-        }
-        else {
-            ModArray(a, size, fnum, snum, i + 1, j);
-        }
-    }
+
+
+    if (left < j)
+        QuickSortModified(arr, left, j);
+    if (i < right)
+        QuickSortModified(arr, i, right);
 }
